@@ -10,7 +10,7 @@
 			"argumentlist":		""
 		},
         {
-			"computernamestring": 	"all",
+			"computernamestring": 	"caen-*",
 			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
 			"argumentlist":		"-argument1 arg1"
 		}
