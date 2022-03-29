@@ -18,13 +18,19 @@ new-item $zipFile -ItemType File -Force
 Invoke-RestMethod -Uri $RepositoryZipFileUrl -OutFile $ZipFile
 Expand-Archive -path $zipFile -DestinationPath $DownloadLocation -Force
 Remove-item -path $zipFile -Force
+$DownloadLocation = (get-childitem $DownloadLocation).FullName
 
 #read in json, etc...
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
 foreach ($entry in $json.entries){
     #$computerName = $tsenv.Value("CAENComputerName")
-    $computerName = "caen-hanzo"
+    $computerName = "me-hanzo"
+    $filepath = join-path $DownloadLocation -ChildPath $entry.script
+    if ($entry.argumentList){
+        $filepath = $filepath + " $($entry.argumentlist)"
+    }
     if (($entry.ComputerNameString -eq "All") -or ($computerName -like $entry.ComputerNameString)){
-        start-process -filepath (join-path $RepositoryZipFileUrl -ChildPath $entry.script) -ArgumentList $entry.ArgumentList -NoNewWindow -Wait
+        write-verbose "Running [$($entry.script)]"
+        start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
     }
 }
