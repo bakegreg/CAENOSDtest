@@ -1,0 +1,15 @@
+{
+	"jsonversion":		"2022.03.29",
+	"changeLog":	[
+						"2022.03.29 : Initial version"
+					],
+	"entries":	[
+		{
+			"computernamestring": 	"all",
+			"script":	"scripts\\computerObjectVerificationAndPrompts.ps1",
+			"argumentlist":		""
+		}
+	]
+}
+
+	
