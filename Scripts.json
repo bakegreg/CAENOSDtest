@@ -8,6 +8,11 @@
 			"computernamestring": 	"all",
 			"script":	"scripts\\computerObjectVerificationAndPrompts.ps1",
 			"argumentlist":		""
+		},
+        {
+			"computernamestring": 	"all",
+			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
+			"argumentlist":		"-argument1 arg1"
 		}
 	]
 }
