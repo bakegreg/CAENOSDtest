@@ -20,11 +20,11 @@ Expand-Archive -path $zipFile -DestinationPath $DownloadLocation -Force
 Remove-item -path $zipFile -Force
 $DownloadLocation = (get-childitem $DownloadLocation).FullName
 
-#read in json, etc...
+#read in json and process scripts
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
 foreach ($entry in $json.entries){
     $computerName = $tsenv.Value("CAENComputerName")
-    #$computerName = "me-hanzo"
+    #$computerName = "caen-hanzo" ----FOR TESTING OUTSIDE A TS
     $filepath = join-path $DownloadLocation -ChildPath $entry.script
     if ($entry.argumentList){
         $filepath = $filepath + " $($entry.argumentlist)"
@@ -34,18 +34,9 @@ foreach ($entry in $json.entries){
     write-output "Script [$($entry.script)]"
     write-output "Arguments [$($entry.argumentList)]"
     if (($entry.ComputerNameString -eq "All") -or ($computerName -like $entry.ComputerNameString)){
-        if ($entry.interactsWithTaskSequence.tolower() -eq "true"){
-            $argumentlist = "-process:TSProgressUI.exe powershell.exe -noprofile -windowstyle hidden -executionpolicy bypass -file $filepath"
-            write-output "Script interacts with the TS so running with ServiceUI.exe."
-            write-output "Running [ServiceUI.exe $argumentlist]"
-            $process = start-process -wait -nonewwindow -filepath "ServiceUI.exe" -argumentList $argumentlist
-            write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]"
-        }
-        else{
-            write-output "Running [$($filepath)]."
-            $process = start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
-            write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
-        }
+        write-output "Running [powershell.exe -executionpolicy bypass -file $($filepath)]."
+        $process = start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
+        write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
     }
     else{
         write-output "Skipping [$($entry.script)]"
