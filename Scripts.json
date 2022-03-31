@@ -1,6 +1,7 @@
 {
-	"jsonversion":		"2022.03.29",
+	"jsonversion":		"2022.03.31",
 	"changeLog":	[
+						"2022.03.31 : interactsWithTaskSequence",
 						"2022.03.29 : Initial version"
 					],
 	"entries":	[
@@ -8,17 +9,19 @@
 			"computernamestring": 	"all",
 			"script":	"scripts\\computerObjectVerificationAndPrompts.ps1",
 			"argumentlist":		"",
-            "InteractsWithTaskSequence":   "true"
+            "interactsWithTaskSequence":   "true"
 		},
         {
 			"computernamestring": 	"fake-*",
 			"script":	"scripts\\fake.ps1",
-			"argumentlist":		"-argument1 arg1"
+			"argumentlist":		"-argument1 arg1",
+			"interactsWithTaskSequence":   "false"
 		},
         {
 			"computernamestring": 	"caen-*",
 			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
-			"argumentlist":		"-argument1 arg1"
+			"argumentlist":		"-argument1 ArgumentNumber1",
+			"interactsWithTaskSequence":   "false"
 		}
 	]
 }
