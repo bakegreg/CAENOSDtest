@@ -37,13 +37,15 @@ foreach ($entry in $json.entries){
         if ($entry.interactsWithTaskSequence.tolower() -eq "true"){
             $argumentlist = "-process:TSProgressUI.exe powershell.exe -noprofile -windowstyle hidden -executionpolicy bypass -file $filepath"
             write-output "Script interacts with the TS so running with ServiceUI.exe."
-            write-output "The argument list is $argumentlist"
+            write-output "Running [ServiceUI.exe $argumentlist]"
             $process = start-process -wait -nonewwindow -filepath "ServiceUI.exe" -argumentList $argumentlist
             write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]"
         }
-        write-output "Running [$($filepath)]."
-        $process = start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
-        write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
+        else{
+            write-output "Running [$($filepath)]."
+            $process = start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
+            write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
+        }
     }
     else{
         write-output "Skipping [$($entry.script)]"
