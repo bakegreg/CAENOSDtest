@@ -9,7 +9,7 @@
 			"computernamestring": 	"all",
 			"script":	"scripts\\computerObjectVerificationAndPrompts.ps1",
 			"argumentlist":		"",
-            "interactsWithTaskSequence":   "true"
+            "interactsWithTaskSequence":   "false"
 		},
         {
 			"computernamestring": 	"fake-*",
