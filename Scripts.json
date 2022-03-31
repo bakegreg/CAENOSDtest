@@ -17,7 +17,7 @@
 		},
         {
 			"computernamestring": 	"caen-*",
-			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
+			"script":	"scripts\\caenTestScript.ps1",
 			"argumentlist":		"-argument1 ArgumentNumber1"
 		}
 	]
