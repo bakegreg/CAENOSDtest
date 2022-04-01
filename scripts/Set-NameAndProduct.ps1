@@ -6,10 +6,10 @@ import-module ActiveDirectory 3>$null
 $user = $tsenv.Value("CaenAdUser")
 $pw = $tsenv.Value("CaenAdPw")
 
-#the key is supposed to be integers separated by newlines but SCCM variables can't handle the newlines. Used commas instead so the data needs to converted.
-$key = $tsenv.Value("CaenAdPwKey") -replace ",","`n"
+#the key is supposed to be integers separated by newlines but SCCM variables can't handle the newlines. Used commas instead so the data needs to converted. Writes it to disk so it can be read in in as a byte string
+$tsenv.Value("CaenAdPwKey") -replace ",","`n" | out-file .\key -encoding utf8 
 
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, ($pw | ConvertTo-SecureString -key $key)
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, ($pw | get-content .\key)
 
 #Try connecting to AD
 $retries = 0
