@@ -7,18 +7,18 @@
 	"entries":	[
 		{
 			"computernamestring": 	"all",
-			"script":	"scripts\\computerObjectVerificationAndPrompts.ps1",
+			"script":	"scripts\\set-nameandproduct.ps1",
 			"argumentlist":		""
 		},
         {
-			"computernamestring": 	"fake-*",
-			"script":	"scripts\\fake.ps1",
-			"argumentlist":		"-argument1 arg1"
+			"computernamestring": 	"all",
+			"script":	"scripts\\show-productsummary.ps1",
+			"argumentlist":		""
 		},
         {
-			"computernamestring": 	"caen-*",
-			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
-			"argumentlist":		"-argument1 ArgumentNumber1"
+			"computernamestring": 	"all",
+			"script":	"scripts\\get-userinputs.ps1",
+			"argumentlist":		""
 		}
 	]
 }
