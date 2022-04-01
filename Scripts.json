@@ -1,7 +1,7 @@
 {
 	"jsonversion":		"2022.03.31",
 	"changeLog":	[
-						"2022.03.31 : Including ME inputs script (temporarily to all systems)",
+						"2022.03.31 : Updated for testing in task sequence",
 						"2022.03.29 : Initial version"
 					],
 	"entries":	[
@@ -11,13 +11,13 @@
 			"argumentlist":		""
 		},
         {
-			"computernamestring": 	"all",
-			"script":	"scripts\\get-userinputs.ps1",
-			"argumentlist":		""
+			"computernamestring": 	"fake-*",
+			"script":	"scripts\\fake.ps1",
+			"argumentlist":		"-argument1 arg1"
 		},
         {
 			"computernamestring": 	"caen-*",
-			"script":	"scripts\\caenTestScript.ps1",
+			"script":	"scripts\\computerObjectVerificationAndPrompts2.ps1",
 			"argumentlist":		"-argument1 ArgumentNumber1"
 		}
 	]
