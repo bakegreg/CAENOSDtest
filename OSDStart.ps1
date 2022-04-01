@@ -20,6 +20,10 @@ Expand-Archive -path $zipFile -DestinationPath $DownloadLocation -Force
 Remove-item -path $zipFile -Force
 $DownloadLocation = (get-childitem $DownloadLocation).FullName
 
+#close the TS UI temporarily
+$TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
+$TSProgressUI.CloseProgressDialog()
+
 #read in json and process scripts
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
 foreach ($entry in $json.entries){
