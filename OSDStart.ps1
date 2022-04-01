@@ -27,16 +27,20 @@ $TSProgressUI.CloseProgressDialog()
 #read in json and process scripts
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
 foreach ($entry in $json.entries){
-    $computerName = $tsenv.Value("CAENComputerName")
+    $computerName = $tsenv.Value("CAENComputerName") #read in the computer name each time because a script being run could change it
     #$computerName = "caen-hanzo" ----FOR TESTING OUTSIDE A TS
     $filepath = join-path $DownloadLocation -ChildPath $entry.script
     if ($entry.argumentList){
         $filepath = $filepath + " $($entry.argumentlist)"
     }
+
+    #write-output goes to smsts.log
     write-output "Computer Name [$ComputerName]"
     write-output "Name string to match against [$($entry.ComputerNameString)]"
     write-output "Script [$($entry.script)]"
     write-output "Arguments [$($entry.argumentList)]"
+
+    #check to see if the script should be run on this system
     if (($entry.ComputerNameString -eq "All") -or ($computerName -like $entry.ComputerNameString)){
         write-output "Running [powershell.exe -executionpolicy bypass -file $($filepath)]."
         $process = start-process -wait -nonewwindow -passthru -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
