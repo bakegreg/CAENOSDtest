@@ -1,10 +1,15 @@
 $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment
-
 $ComputerName = $tsenv.Value("CAENComputerName")
 
 #------------------------------Connect to Active Directory--------------------
 import-module ActiveDirectory 3>$null
-$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($tsenv.Value("CaenAdUser")), ($tsenv.Value("CaenAdPw") | ConvertTo-SecureString -key ($tsenv.Value("CaenAdPwKey")))
+$user = $tsenv.Value("CaenAdUser")
+$pw = $tsenv.Value("CaenAdPw")
+
+#the key is supposed to be integers separated by newlines but SCCM variables can't handle the newlines. Used commas instead so the data needs to converted.
+$key = $tsenv.Value("CaenAdPwKey") -replace ",","`n"
+
+$credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $user, ($pw | ConvertTo-SecureString -key $key)
 
 #Try connecting to AD
 $retries = 0
@@ -53,12 +58,10 @@ while (-not($validComputer)){
 	}
 	elseif ($computerObject.distinguishedName -like "*OU=CAEN Lab Software Environment,OU=CAEN Managed Desktops,OU=CAEN,OU=ENGIN,OU=Organizations,OU=UMICH,DC=adsroot,DC=itcs,DC=umich,DC=edu"){
 		$tsenv.Value("CLSEBD") = "CLSE"
-		$Product = "CLSE"
 		$validComputer = $True
 	}
 	elseif ($computerObject.distinguishedName -like "*OU=Engineering Base Desktop,OU=CAEN Managed Desktops,OU=CAEN,OU=ENGIN,OU=Organizations,OU=UMICH,DC=adsroot,DC=itcs,DC=umich,DC=edu"){
 		$tsenv.Value("CLSEBD") = "EBD"
-		$Product = "EBD"
 		$validComputer = $True
 	}
 	else {
@@ -67,31 +70,10 @@ while (-not($validComputer)){
 	}
 }
 
-#------------------Set TS variables and display summary to user----------------------------
+#------------------Set TS variables----------------------------
 $tsenv.Value("DistinguishedName") = [string]$computerObject.distinguishedName
 $tsenv.Value("OSDComputerName") = $ComputerName
 $tsenv.Value("CAENComputerName") = $ComputerName
 
-#display message box showing the product to be installed
-$Version = $tsenv.Value("CAEN_VERSION")
-if ($tsenv.Value("ZTILinux") -eq "true"){
-	$Product = $Product + " - Dual Boot Linux"
-}
-else{
-	$Product = $Product + " - Single Boot Windows"
-}
-$Model = Get-WmiObject Win32_Computersystem | foreach-object {$_.Model}
-$Message = "The product to install has been dynamically selected based on the Active Directory OU of the computer object. Summary: `n`nProduct:                   $product`nVersion:                   $Version`nComputer Name:   $ComputerName `nModel:                     $Model`n`nThis box will automatically close in two minutes." 
-
-$SecondsToWait = 120 #amount of time before the box automatically closes
-$Title = "CAEN Product Summary"
-$Button = 0 #a single OK button (https://msdn.microsoft.com/en-us/library/x83z1d9f(v=vs.84).aspx)
-$Icon = 64 #an Information icon
-
-(New-Object -ComObject Wscript.Shell).popup($Message,$SecondsToWait,$Title,$Button + $Icon)
-
 Set-Location x:
 remove-psdrive umroot
-
-
-
