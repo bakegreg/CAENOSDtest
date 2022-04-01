@@ -10,6 +10,11 @@
 			"script":	"scripts\\set-nameandproduct.ps1",
 			"argumentlist":		""
 		},
+		{
+			"computernamestring": 	"all",
+			"script":	"scripts\\leavelinuxprompt.ps1",
+			"argumentlist":		""
+		},
         {
 			"computernamestring": 	"all",
 			"script":	"scripts\\show-productsummary.ps1",
