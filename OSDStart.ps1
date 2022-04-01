@@ -39,7 +39,7 @@ foreach ($entry in $json.entries){
     write-output "Arguments [$($entry.argumentList)]"
     if (($entry.ComputerNameString -eq "All") -or ($computerName -like $entry.ComputerNameString)){
         write-output "Running [powershell.exe -executionpolicy bypass -file $($filepath)]."
-        $process = start-process -wait -nonewwindow -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
+        $process = start-process -wait -nonewwindow -passthru -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
         write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
     }
     else{
