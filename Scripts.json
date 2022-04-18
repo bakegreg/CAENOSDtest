@@ -21,7 +21,7 @@
 			"argumentlist":		""
 		},
         {
-			"computernamestring": 	"me-*",
+			"computernamestring": 	"all",
 			"script":	"scripts\\get-userinputs.ps1",
 			"argumentlist":		""
 		}
