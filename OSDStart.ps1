@@ -1,7 +1,8 @@
 Param(
     [Parameter(Mandatory=$True)][string]$RepositoryZipFileUrl,
     [Parameter(Mandatory=$True)][string]$JsonFileName,
-    [Parameter(Mandatory=$True)][string]$DownloadLocation  
+    [Parameter(Mandatory=$True)][string]$DownloadLocation,
+    [int]$ALLOWEDSCRIPTRUNTIME = 300 #seconds
 )
 
 #Connect to task sequence environment
@@ -27,24 +28,28 @@ $TSProgressUI.CloseProgressDialog()
 #read in json and process scripts
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
 foreach ($entry in $json.entries){
-    $computerName = $tsenv.Value("CAENComputerName") #read in the computer name each time because a script being run could change it
+    $computerName = $tsenv.Value("CAENComputerName")
     #$computerName = "caen-hanzo" ----FOR TESTING OUTSIDE A TS
     $filepath = join-path $DownloadLocation -ChildPath $entry.script
     if ($entry.argumentList){
         $filepath = $filepath + " $($entry.argumentlist)"
     }
-
-    #write-output goes to smsts.log
     write-output "Computer Name [$ComputerName]"
     write-output "Name string to match against [$($entry.ComputerNameString)]"
     write-output "Script [$($entry.script)]"
     write-output "Arguments [$($entry.argumentList)]"
-
-    #check to see if the script should be run on this system
     if (($entry.ComputerNameString -eq "All") -or ($computerName -like $entry.ComputerNameString)){
         write-output "Running [powershell.exe -executionpolicy bypass -file $($filepath)]."
-        $process = start-process -wait -nonewwindow -passthru -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath"
-        write-output "[$($entry.script)] completed with exit code [$($process.exitcode)]."
+        $processid = (start-process -nonewwindow -passthru -filepath "powershell.exe" -argumentList "-executionpolicy bypass -file $filepath").Id
+        $starttime = get-date
+        do{
+            start-sleep -seconds 2
+            $currenttime = get-date
+            if ($currenttime.totalseconds -gt $ALLOWEDSCRIPTRUNTIME){
+                write-output "Script runtime of [ $ALLOWEDSCRIPTRUNTIME ] exceeded. Ending it now."
+            }
+        } while ((get-process -Id $processid -ErrorAction Ignore) -and ($currenttime.totalseconds -lt $ALLOWEDSCRIPTRUNTIME))
+        write-output "[$($entry.script)] completed."
     }
     else{
         write-output "Skipping [$($entry.script)]"
