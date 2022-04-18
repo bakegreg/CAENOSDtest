@@ -47,6 +47,7 @@ foreach ($entry in $json.entries){
             $currenttime = get-date
             if (($currenttime - $starttime).totalseconds -gt $ALLOWEDSCRIPTRUNTIME){
                 write-output "Script runtime of [ $ALLOWEDSCRIPTRUNTIME ] exceeded. Ending it now."
+                Get-Process -Id $processid | Select-Object -Property Id | ForEach-Object -Process { Stop-Process -Id $_.Id -Force }
             }
         } while ((get-process -Id $processid -ErrorAction Ignore) -and (($currenttime - $starttime).totalseconds -le $ALLOWEDSCRIPTRUNTIME))
         write-output "[$($entry.script)] completed."
