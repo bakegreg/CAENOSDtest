@@ -2,7 +2,7 @@ Param(
     [Parameter(Mandatory=$True)][string]$RepositoryZipFileUrl,
     [Parameter(Mandatory=$True)][string]$JsonFileName,
     [Parameter(Mandatory=$True)][string]$DownloadLocation,
-    [int]$ALLOWEDSCRIPTRUNTIME = 300 #seconds
+    [int]$ALLOWEDSCRIPTRUNTIME = 900 #seconds
 )
 
 #Connect to task sequence environment
