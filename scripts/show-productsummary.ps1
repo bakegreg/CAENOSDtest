@@ -19,5 +19,7 @@ $Title = "CAEN Product Summary"
 $Button = 0 #a single OK button (https://msdn.microsoft.com/en-us/library/x83z1d9f(v=vs.84).aspx)
 $Icon = 64 #an Information icon
 
-[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
-(New-Object -ComObject Wscript.Shell).popup($Message,$SecondsToWait,$Title,$Button + $Icon)
+#[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
+#(New-Object -ComObject Wscript.Shell).popup($Message,$SecondsToWait,$Title,$Button + $Icon)
+$TaskSequenceProgressUi = New-Object -ComObject "Microsoft.SMS.TSProgressUI"
+$TaskSequenceProgressUi.ShowMessageEx($Message, $Title, $Button)
