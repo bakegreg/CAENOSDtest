@@ -41,7 +41,7 @@ foreach ($entry in $json.entries){
         $CurrentAction,`
         $CurrentStep,`
         $TotalSteps,`
-        "Script [ $entryCount / $($json.entries.count) ] : $($entry.script) ",`
+        "Script [ $entryCount / $($json.entries.count) ] : $($entry.script.split("\")[-1]) ",`
         $entryCount,`
         $json.entries.count
     )
