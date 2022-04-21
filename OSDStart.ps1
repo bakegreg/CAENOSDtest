@@ -2,13 +2,14 @@ Param(
     [Parameter(Mandatory=$True)][string]$RepositoryZipFileUrl,
     [Parameter(Mandatory=$True)][string]$JsonFileName,
     [Parameter(Mandatory=$True)][string]$DownloadLocation,
-    [int]$ALLOWEDSCRIPTRUNTIME = 300 #seconds
+    [int]$ALLOWEDSCRIPTRUNTIME = 900 #seconds
 )
 
-#Connect to task sequence environment and populate variables (all default from the task sequence environment)
+#Connect to task sequence environment 
 $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment
 $TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
 
+#Populate variables for TS UI (all default from the task sequence environment)
 $OrgName = $tsenv.value("_SMSTSOrgName")
 $PackageName = $tsenv.value("_SMSTSPackageName")
 $Title = $tsenv.value("_SMSTSCustomProgressDialogMessage")
@@ -34,7 +35,7 @@ $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $Js
 $entryCount = 0 #for keeping track of current step for TS progress UI
 foreach ($entry in $json.entries){
     $entryCount += 1
-    $TSProgressUI.ShowActionProgress(`
+    $TSProgressUI.ShowActionProgress(` #custom UI progress bar
         $OrgName,`
         $PackageName,`
         $Title,`
