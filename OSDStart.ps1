@@ -2,11 +2,19 @@ Param(
     [Parameter(Mandatory=$True)][string]$RepositoryZipFileUrl,
     [Parameter(Mandatory=$True)][string]$JsonFileName,
     [Parameter(Mandatory=$True)][string]$DownloadLocation,
-    [int]$ALLOWEDSCRIPTRUNTIME = 900 #seconds
+    [int]$ALLOWEDSCRIPTRUNTIME = 300 #seconds
 )
 
-#Connect to task sequence environment
+#Connect to task sequence environment and populate variables (all default from the task sequence environment)
 $tsenv = New-Object -COMObject Microsoft.SMS.TSEnvironment
+$TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
+
+$OrgName = $tsenv.value("_SMSTSOrgName")
+$PackageName = $tsenv.value("_SMSTSPackageName")
+$Title = $tsenv.value("_SMSTSCustomProgressDialogMessage")
+$CurrentAction = $tsenv.value("_SMSTSCurrentActionName")
+$CurrentStep = [Convert]::ToUInt32($tsenv.Value("_SMSTSNextInstructionPointer"))
+$TotalSteps = [Convert]::ToUInt32($tsenv.Value("_SMSTSInstructionTableSize"))
 
 #verify downloadlocationroot exists
 if (-not(test-path $DownloadLocation)){
@@ -21,13 +29,23 @@ Expand-Archive -path $zipFile -DestinationPath $DownloadLocation -Force
 Remove-item -path $zipFile -Force
 $DownloadLocation = (get-childitem $DownloadLocation).FullName
 
-#close the TS UI temporarily
-$TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
-$TSProgressUI.CloseProgressDialog()
-
 #read in json and process scripts
 $json = Get-Content -Raw -Path (join-path -path $DownloadLocation -ChildPath $JsonFileName) | ConvertFrom-Json
+$entryCount = 0 #for keeping track of current step for TS progress UI
 foreach ($entry in $json.entries){
+    $entryCount += 1
+    $TSProgressUI.ShowActionProgress(`
+        $OrgName,`
+        $PackageName,`
+        $Title,`
+        $CurrentAction,`
+        $CurrentStep,`
+        $TotalSteps,`
+        "Script [ $entryCount / $($json.entries.count) ] : $($entry.script) ",`
+        $entryCount,`
+        $json.entries.count
+    )
+
     $computerName = $tsenv.Value("CAENComputerName")
     #$computerName = "caen-hanzo" ----FOR TESTING OUTSIDE A TS
     $filepath = join-path $DownloadLocation -ChildPath $entry.script

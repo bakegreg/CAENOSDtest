@@ -31,10 +31,8 @@ while ($retries -lt 3) {
 		start-sleep 5
 	}
 }
-# Close the TS UI temporarily
-$TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
-$TSProgressUI.CloseProgressDialog()
 
+$TSProgressUI = New-Object -COMObject Microsoft.SMS.TSProgressUI
 
 #-------------------------Check AD for Computer Object and prompt if required----------------------
 Set-Location umroot:
@@ -43,6 +41,8 @@ $validComputer = $False
 while (-not($validComputer)){
 	$computerObject = Get-ChildItem -recurse | Where-Object {$_.Name -eq $ComputerName}
 	if ($ComputerName -like "MININT-*"){
+		# Close the TS UI temporarily
+		$TSProgressUI.CloseProgressDialog()
 		[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 		$ComputerName = [Microsoft.VisualBasic.Interaction]::InputBox("Enter the computer name", "Computer name prompt", "Example: caen-testcomp")
 	}
@@ -53,6 +53,8 @@ while (-not($validComputer)){
 		return 1337 #Cancel the Task Sequence with this error code
 	}
 	elseif (!$computerObject){
+		# Close the TS UI temporarily
+		$TSProgressUI.CloseProgressDialog()
 		[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 		$ComputerName = [Microsoft.VisualBasic.Interaction]::InputBox("$ComputerName was not found nested under the Engin OU. Create the object or enter a new computer name.", "Computer name prompt", "Example:  caen-testcomp")
 	}
@@ -65,6 +67,8 @@ while (-not($validComputer)){
 		$validComputer = $True
 	}
 	else {
+		# Close the TS UI temporarily
+		$TSProgressUI.CloseProgressDialog()
 		[System.Reflection.Assembly]::LoadWithPartialName('Microsoft.VisualBasic') | Out-Null
 		$ComputerName = [Microsoft.VisualBasic.Interaction]::InputBox("$ComputerName is not located in a valid EBD or CLSE Active Directory OU. Move the computer object or select a new computer name.", "Computer name prompt", "Example:  caen-testcomp")
 	}

@@ -22,7 +22,7 @@
 		},
         {
 			"computernamestring": 	"me-*",
-			"script":	"scripts\\get-userinputs.ps1",
+			"script":	"scripts\\get-MEUserInputs.ps1",
 			"argumentlist":		""
 		}
 	]
